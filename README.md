@@ -6,7 +6,7 @@ The first word, with vowels and cantillation markings, is spelled: בְּרֵא�
 
 
 ```
-Bet    Resh   Aleph  Shin    Yod  Sav
+Bet    Resh   Aleph  Shin    Yud  Sav
 Shva   Tsere  -      Chirik  -    - 
 -      -      -      Tipcha  -    -
 ```
