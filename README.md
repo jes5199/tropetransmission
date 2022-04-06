@@ -16,10 +16,10 @@ The first trope in Genesis is Tipcha.
 The trope symbol marks the accented syllable of the word.
 
 When sung,
-The first note is always the upbeat note 
-Syllables before the accent are sung on the upbeat note!
-The melody is sung on the accented syllable.
-Syllable after the accent (if there is one), are sung on the last note of the melody
+* The first note is always the upbeat note 
+* Syllables before the accent are sung on the upbeat note!
+* The melody is sung on the accented syllable.
+* Syllable after the accent (if there is one), are sung on the last note of the melody
 
 TropeTrainer's "Rosowsky (High Silluq)" melody describes standard Tipcha as: 
 ```
