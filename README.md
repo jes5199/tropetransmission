@@ -68,7 +68,15 @@ Also unique to TT's copy of DECTalk is pitch slides. A phoneme with a four-digit
 
 Each tropedef has some global definitions for its melody style:
 ```
-  <TROPEDEF NAME="Ashkenazic - Rosowsky (High Silluq)" TYPE="Torah" ENCODING="ASHKENAZ-ACADEMIC NAMES" PITCHBEND="1" ASSIMILATE_PITCH="False" KEY="F MAJOR" ASSIMILATE_RHYTHM="True" DESCRIPTION="A standard for Ashkenazim of Polish-Lithuanian origin. This version features the Silluq [Sof Pasuk] that Rosowsky taught to his students, not what is documented in his book. Also, the most complex with many detailed exceptions, principally with the 'Munach' trope. Many books on the topic of biblical chant make reference to Rosowsky's work.">
+  <TROPEDEF
+    NAME="Ashkenazic - Rosowsky (High Silluq)"
+    TYPE="Torah"
+    ENCODING="ASHKENAZ-ACADEMIC NAMES"
+    PITCHBEND="1"
+    ASSIMILATE_PITCH="False"
+    KEY="F MAJOR"
+    ASSIMILATE_RHYTHM="True"
+    DESCRIPTION="A standard for Ashkenazim of Polish-Lithuanian origin. This version features the Silluq [Sof Pasuk] that Rosowsky taught to his students, not what is documented in his book. Also, the most complex with many detailed exceptions, principally with the 'Munach' trope. Many books on the topic of biblical chant make reference to Rosowsky's work.">
 ```
 
 I believe that that PITCHBEND=1 means each syllable's first consonant is 0.1 semitones higher than the following vowel. Other TROPEDEF entries have negative PITCHBEND, and some are set to zero.
