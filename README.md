@@ -1,10 +1,11 @@
 # Beginnings
 
+(Note: Unicode Cantillated Genesis is available online at https://mechon-mamre.org/c/ct/c0101.htm )
 
 The first word, with vowels and cantillation markings, is spelled:
+
 בְּרֵאשִׁ֖ית
 
-Note: Unicode Cantillated Genesis is available online at https://mechon-mamre.org/c/ct/c0101.htm
 
 ```
 Bet    Resh   Aleph  Shin    Yod  Sav
