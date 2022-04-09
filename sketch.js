@@ -330,8 +330,7 @@ function vowelHoldDuration(speed, duration, isUpbeat) {
     let randomLength = Math.floor(Math.random() * tenPercentLength);
     let sungNoteLength = noteLength + randomLength;
 
-    let holdLength = Math.max(1, sungNoteLength - 50); // FIXME: check this behavior when very fast
-
+    let holdLength = Math.max(25, sungNoteLength - 50);
     return holdLength;
 }
 
@@ -452,7 +451,9 @@ async function decTalk(text) {
 
 function decSing(phones, speed) {
     if (!speed) { speed = 10 }
-    decTalk(decText(phones), decRateForSpeed(speed));
+    let text = decText(phones, decRateForSpeed(speed));
+    console.log(text);
+    decTalk(text);
 }
 
 
@@ -464,7 +465,7 @@ async function tests() {
     console.log(textPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
     //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
 
-    let speed = 10;
+    let speed = 3;
     let song = decSong(
         AveryBinderStyle,
         AveryBinderMelody,
