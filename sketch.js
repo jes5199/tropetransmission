@@ -190,6 +190,15 @@ const AshkenaziTraditionalPhonemes = {
     "Sav": ["~s", "s"],
 }
 
+const voices = {
+    "Bass": "Harry",
+    "Baritone": "Paul",
+    "Tenor": "Dennis",
+    "Alto": "Betty",
+    "Soprano": "Rita",
+    "Child": "Kit"
+};
+
 function unicodeHebrewWordToTokens(hebrewGlyphString) {
     // each mark in a hebrew word is a separate unicode character
     let r = [];
@@ -414,10 +423,11 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
     return r;
 }
 
-function decText(phones, rate) {
+function decText(phones, rate, voice) {
     if (!rate) { rate = 170 }
+    if (!voice) { voice = "Paul" }
 
-    return "[:volume att 80] [:mode email on] [:comma -40] [:name Paul   ]" 
+    return "[:volume att 80] [:mode email on] [:comma -40] [:name "+voice+"]" 
     + "[:rate "+rate+"] [:phoneme arpabet speak on]  [:index mark 4]" 
     + "[" + phones + "]"
 }
@@ -449,9 +459,9 @@ async function decTalk(text) {
     await exitPromise;
 }
 
-function decSing(phones, speed) {
+function decSing(phones, speed, range) {
     if (!speed) { speed = 10 }
-    let text = decText(phones, decRateForSpeed(speed));
+    let text = decText(phones, decRateForSpeed(speed), voices[range]);
     console.log(text);
     decTalk(text);
 }
@@ -466,6 +476,8 @@ async function tests() {
     //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
 
     let speed = 3;
+    let range = "Bass";
+
     let song = decSong(
         AveryBinderStyle,
         AveryBinderMelody,
@@ -478,7 +490,7 @@ async function tests() {
 
 //    await decTalk("[:name Paul] aeiou");
 
-    await decSing(song, speed);
+    await decSing(song, speed, range);
 }
 
 tests();
