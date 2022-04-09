@@ -1,3 +1,4 @@
+const { chdir } = require("process");
 
 
 let inTheBeginning = "בְּרֵאשִׁ֖ית"
@@ -47,6 +48,10 @@ const vowels = [
     "Chirik", "Tsere"
 ];
 
+const silent = [
+    "Aleph", "Yud"
+]
+
 const dots = [
     "Dagesh", "Shin Dot", "Sin Dot"
 ];
@@ -55,7 +60,15 @@ const tropes = [
     "Tipcha"
 ];
 
-const RosowskyHighSilluqTrope = {
+
+const RosowskyHighSilluqStyle = {
+    pitchbend: 1,
+    assimilate_pitch: false,
+    key: "F MAJOR",
+    assimilate_rhythm: true,
+}
+
+const RosowskyHighSilluqMelody = {
     "Tipcha": {
         "Default": [
             ["a", 8], 
@@ -64,6 +77,34 @@ const RosowskyHighSilluqTrope = {
             ["g", 8]
         ]
     }
+}
+
+function decRateForSpeed(speed)  {
+    return 20 + (15 * speed);
+}
+
+const AveryBinderHighSofPasukStyle = {
+    pitchbend: 1,
+    assimilate_pitch: false,
+    key: "C MAJOR",
+    assimilate_rhythm: true,
+}
+
+const AveryBinderHighSofPasukMelody = {
+    "Tipcha": {
+        "Default": [
+            ["g", 8], 
+            ["a", 10],
+            ["C", 10],
+            ["g", 8]
+        ]
+    }
+}
+
+const decPitches = {
+    "g": 146,
+    "a": 164,
+    "C": 194,
 }
 
 const AshkenaziTraditionalPhonemes = {
@@ -172,7 +213,7 @@ function anyVowels(tokens) {
     return tokens.findIndex(function(t){ return vowels.includes(t) }) != -1;
 }
 
-function tropeForTokenizedWord(wordTokens) {
+function tropeForTokenizedWord(wordTokens, speed) {
     let tropeName = null;
     let preTrope = [];
     let tropeSyllable = [];
@@ -219,6 +260,10 @@ function textPronunciation(phonemes, tokens) {
     let r = "";
 
     for (const token of tokens) {
+        if (silent.includes(token)) {
+            continue;
+        }
+
         const phonemePair = AshkenaziTraditionalPhonemes[token];
         if (phonemePair) {
             textPhoneme = phonemePair[1];
@@ -241,9 +286,171 @@ function decPronunciation(phonemes, tokens) {
     return r;
 }
 
-console.log(unicodeHebrewWordToTokens(inTheBeginning));
+function slidePitch(phone, pitch, slideDuration, holdDuration) {
+    if (!slideDuration) {slideDuration = ""}
+    if (!holdDuration) {holdDuration = ""}
+    if (!pitch) {pitch = ""} else {pitch = "5" + pitch}
 
-console.log(tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)));
+    return phone + "<" + slideDuration + "," + pitch + ">" 
+         + phone + "<" + holdDuration  + "," + pitch + ">";
+}
 
-console.log(textPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
-console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
+function vowelHoldDuration(speed, duration) {
+    let divisor = 20 + (12 * speed);
+    let wholeNoteLength = Math.round(120000 / divisor);
+    let noteLength = Math.round(wholeNoteLength / duration);
+
+    let shorterNoteLength = Math.round(noteLength / 1.1);
+    let tenPercentLength = Math.round(shorterNoteLength * 0.1);
+    let randomLength = Math.floor(Math.random() * tenPercentLength);
+    let sungNoteLength = shorterNoteLength + randomLength;
+    let holdLength = sungNoteLength - 50;
+
+    return holdLength;
+}
+
+function decSong(style, melody, phonemes, trope, speed, pitch) {
+    if (!speed) { speed = 10; }
+
+    let pitchbend = style.pitchbend;
+
+    let tropeName = trope[0];
+    let preTrope = trope[1];
+    let onTrope = trope[2];
+    let postTrope = trope[3];
+
+    let notes = melody[tropeName]["Default"];
+    let upbeat = notes[0];
+
+    let downbeat = notes[notes.length - 1];
+    let r = "";
+
+    for (token of preTrope) {
+        if (silent.includes(token)) {
+            continue;
+        }
+
+        let phone = decPronunciation(phonemes, [token]);
+        let duration = upbeat[1];
+        let slideDuration = vowels.includes(token) ? 50 : 20;
+        let holdDuration = vowels.includes(token) ? vowelHoldDuration(speed, duration) : null;
+
+        let pitch = decPitches[upbeat[0]];
+
+        r += slidePitch(phone, pitch, slideDuration, holdDuration);
+    }
+
+    let afterVowel = false;
+    for (token of onTrope) {
+        if (silent.includes(token)) {
+            continue;
+        }
+
+        let phone = decPronunciation(phonemes, [token]);
+
+        let slideDuration = 20; // for consonants
+        let holdDuration = null; // for consonants
+
+        let pitch = decPitches[notes[1][0]];
+
+        if (vowels.includes(token)) {
+            let slideDuration = 50;
+            for (note of notes.slice(1)) {
+                let pitch = decPitches[note[0]];
+                let duration = note[1];
+                let holdDuration = vowelHoldDuration(speed, duration);
+                
+                r += slidePitch(phone, pitch, slideDuration, holdDuration);
+            }
+            afterVowel = true;
+        } else {
+            if (afterVowel) {
+                pitch = decPitches[downbeat[0]];
+            }
+            r += slidePitch(phone, pitch, slideDuration, holdDuration);
+        }
+    }
+    for (token of postTrope) {
+        if (silent.includes(token)) {
+            continue;
+        }
+        
+        let pitch = decPitches[downbeat[0]];
+
+        let phone = decPronunciation(phonemes, [token]);
+
+        let duration = downbeat[1];
+        let slideDuration = vowels.includes(token) ? 50 : 20;
+        let holdDuration = vowels.includes(token) ? vowelHoldDuration(speed, duration) : null;
+
+        r += slidePitch(phone, pitch, slideDuration, holdDuration);
+    }
+
+    return r;
+}
+
+function decText(phones, rate) {
+    if (!rate) { rate = 170 }
+
+    return "[:volume att 80] [:mode email on] [:comma -40] [:name Paul   ]" 
+    + "[:rate "+rate+"] [:phoneme arpabet speak on]  [:index mark 4]" 
+    + "[" + phones + "]"
+}
+
+async function decTalk(text) {
+    const { spawn } = require("child_process");
+    let child = spawn("bash", ["./tropetalk/tropesay.sh"]);
+
+    child.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+    });
+
+    child.on('close', (code) => {
+        if (code !== 0) {
+          console.log(`process exited with code ${code}`);
+        }
+        child.stdin.end();
+    });
+      
+    let exitPromise = new Promise( (resolve) => {
+        child.on('exit', () => {
+            resolve();
+        });
+    });
+
+    child.stdin.write(text + "\n");
+    child.stdin.end();
+
+    await exitPromise;
+}
+
+function decSing(phones, speed) {
+    if (!speed) { speed = 10 }
+    decTalk(decText(phones), decRateForSpeed(speed));
+}
+
+
+async function tests() {
+    console.log(unicodeHebrewWordToTokens(inTheBeginning));
+
+    console.log(tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)));
+
+    console.log(textPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
+    //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
+
+    console.log(decSong(
+        AveryBinderHighSofPasukStyle,
+        AveryBinderHighSofPasukMelody,
+        AshkenaziTraditionalPhonemes,
+        tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning))));
+
+//    await decTalk("[:name Paul] aeiou");
+
+    await decSing(decSong(
+        AveryBinderHighSofPasukStyle,
+        AveryBinderHighSofPasukMelody,
+        AshkenaziTraditionalPhonemes,
+        tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning))));
+}
+
+tests();
