@@ -304,7 +304,8 @@ function vowelHoldDuration(speed, duration) {
     let tenPercentLength = Math.round(shorterNoteLength * 0.1);
     let randomLength = Math.floor(Math.random() * tenPercentLength);
     let sungNoteLength = shorterNoteLength + randomLength;
-    let holdLength = sungNoteLength - 50;
+
+    let holdLength = Math.max(1, sungNoteLength - 50); // FIXME: check this behavior when very fast
 
     return holdLength;
 }
@@ -438,19 +439,20 @@ async function tests() {
     console.log(textPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
     //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
 
-    console.log(decSong(
+    let speed = 10;
+    let song = decSong(
         AveryBinderHighSofPasukStyle,
         AveryBinderHighSofPasukMelody,
         AshkenaziTraditionalPhonemes,
-        tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning))));
+        tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)),
+        speed
+    );
+
+    console.log(song);
 
 //    await decTalk("[:name Paul] aeiou");
 
-    await decSing(decSong(
-        AveryBinderHighSofPasukStyle,
-        AveryBinderHighSofPasukMelody,
-        AshkenaziTraditionalPhonemes,
-        tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning))));
+    await decSing(song, speed);
 }
 
 tests();
