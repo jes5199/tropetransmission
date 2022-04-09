@@ -95,11 +95,31 @@ const AveryBinderHighSofPasukMelody = {
         "Default": [
             ["g", 8], 
             ["a", 10],
-            ["C", 10],
+            ["C", 12],
             ["g", 8]
         ]
     }
 }
+
+
+const AveryBinderStyle = {
+    pitchbend: 1,
+    assimilate_pitch: false,
+    key: "C MAJOR",
+    assimilate_rhythm: true,
+}
+
+const AveryBinderMelody = {
+    "Tipcha": {
+        "Default": [
+            ["g", 8], 
+            ["a", 10],
+            ["C", 12],
+            ["g", 8]
+        ]
+    }
+}
+
 
 const decPitches = {
     "g": 146,
@@ -295,15 +315,20 @@ function slidePitch(phone, pitch, slideDuration, holdDuration) {
          + phone + "<" + holdDuration  + "," + pitch + ">";
 }
 
-function vowelHoldDuration(speed, duration) {
+function vowelHoldDuration(speed, duration, isUpbeat) {
     let divisor = 20 + (12 * speed);
+
     let wholeNoteLength = Math.round(120000 / divisor);
     let noteLength = Math.round(wholeNoteLength / duration);
 
-    let shorterNoteLength = Math.round(noteLength / 1.1);
-    let tenPercentLength = Math.round(shorterNoteLength * 0.1);
+    if (isUpbeat) {
+        noteLength = Math.round(noteLength / 1.1);
+    }
+    console.log(noteLength);
+
+    let tenPercentLength = Math.round(noteLength * 0.1);
     let randomLength = Math.floor(Math.random() * tenPercentLength);
-    let sungNoteLength = shorterNoteLength + randomLength;
+    let sungNoteLength = noteLength + randomLength;
 
     let holdLength = Math.max(1, sungNoteLength - 50); // FIXME: check this behavior when very fast
 
@@ -334,7 +359,7 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
         let phone = decPronunciation(phonemes, [token]);
         let duration = upbeat[1];
         let slideDuration = vowels.includes(token) ? 50 : 20;
-        let holdDuration = vowels.includes(token) ? vowelHoldDuration(speed, duration) : null;
+        let holdDuration = vowels.includes(token) ? vowelHoldDuration(speed, duration, true) : null;
 
         let pitch = decPitches[upbeat[0]];
 
@@ -441,8 +466,8 @@ async function tests() {
 
     let speed = 10;
     let song = decSong(
-        AveryBinderHighSofPasukStyle,
-        AveryBinderHighSofPasukMelody,
+        AveryBinderStyle,
+        AveryBinderMelody,
         AshkenaziTraditionalPhonemes,
         tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)),
         speed
