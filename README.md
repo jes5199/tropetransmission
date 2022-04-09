@@ -21,15 +21,15 @@ When sung,
 * The melody is sung on the accented syllable.
 * Syllable after the accent (if there is one), are sung on the last note of the melody
 
-TropeTrainer's "Rosowsky (High Silluq)" melody describes standard Tipcha as: 
+TropeTrainer's "Avery/Binder High Sof Pasuk" melody describes standard Tipcha as: 
 ```
 <!-- tropedef.xml -->
 <TROPE NAME="TIPCHA">
     <CONTEXT DEFAULT="TRUE">
     <NOTES>
-        <NOTE PITCH="a" DURATION="8" UPBEAT="TRUE"/>
+        <NOTE PITCH="g" DURATION="8" UPBEAT="TRUE"/>
         <NOTE PITCH="a" DURATION="10"/>
-        <NOTE PITCH="C" DURATION="10"/>
+        <NOTE PITCH="C" DURATION="12"/>
         <NOTE PITCH="g" DURATION="8"/>
     </NOTES>
     </CONTEXT>
@@ -40,7 +40,7 @@ TropeTrainer's "Rosowsky (High Silluq)" melody describes standard Tipcha as:
 
 and TT3 renders it as musical notation:
 ```
-a4  a4   a4    C5     g4
+g4  g4   a4    C5     g4
 8th 8th  16dot 16dot  8th
 b"  rey  shees  -     -
 ```
@@ -66,18 +66,19 @@ Also unique to TT's copy of DECTalk is pitch slides. A phoneme with a four-digit
 
 Each tropedef has some global definitions for its melody style:
 ```
-  <TROPEDEF
-    NAME="Ashkenazic - Rosowsky (High Silluq)"
+  <TROPEDEF NAME="Ashkenazic - Avery/Binder High Sof Pasuk"
     TYPE="Torah"
-    ENCODING="ASHKENAZ-ACADEMIC NAMES"
+    ENCODING="ASHKENAZ-BINDER"
     PITCHBEND="1"
+    KEY="C MAJOR"
     ASSIMILATE_PITCH="False"
-    KEY="F MAJOR"
-    ASSIMILATE_RHYTHM="True"
-    DESCRIPTION="A standard for Ashkenazim of Polish-Lithuanian origin. This version features the Silluq [Sof Pasuk] that Rosowsky taught to his students, not what is documented in his book. Also, the most complex with many detailed exceptions, principally with the 'Munach' trope. Many books on the topic of biblical chant make reference to Rosowsky's work.">
+    ASSIMILATE_RHYTHM="TRUE"
+    DESCRIPTION="This melody Louis Avery's variant on the melody taught by Abraham Binder, and is of very traditional East European origin. Many Ashkenazim of all streams will find this melody used in their synagogue. This melody is a standard for the Reform movement, and is how Lawrence Avery taught it. Sof Pasuk ends on F.">
+
 ```
 
 I believe that that PITCHBEND=1 means each syllable's first consonant is 0.1 semitones higher than the following vowel. Other TROPEDEF entries have negative PITCHBEND, and some are set to zero.
 
 I am not sure why pitch 14.6 is "a4" - it seems unrelated to standard DECtalk's tone tables, and may be related to ASSIMILATE_PITCH="False" - but all of the Tropes in TT3 have ASSIMILATE_PITCH set to False!
 
+The duration math is complicated! TODO: explain it.
