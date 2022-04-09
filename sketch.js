@@ -120,11 +120,29 @@ const AveryBinderMelody = {
     }
 }
 
+const numericNotes = {
+    "f": 13,
+    "g": 15,
+    "a": 17,
+    "b": 19,
+    "C": 20,
+    "D": 22,
+    "E": 24,
+}
 
-const decPitches = {
-    "g": 146,
-    "a": 164,
-    "C": 194,
+function decPitchForNote(note) {
+    if (Array.isArray(note)) {
+        note = note[0];
+    }
+    if (typeof note != "number") {
+        note = numericNotes[note];
+    }
+    let transposedNote = note + 30 + 5 - 9;
+
+    let unbentValue = Math.round((2 ** (transposedNote / 12) ) * 13.75);
+    let value = unbentValue + 1 - 2;
+
+    return value;
 }
 
 const AshkenaziTraditionalPhonemes = {
@@ -365,11 +383,13 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
         }
 
         let phone = decPronunciation(phonemes, [token]);
+
+        // TODO: extract this into a function
         let duration = upbeat[1];
         let slideDuration = vowels.includes(token) ? 50 : 20;
         let holdDuration = vowels.includes(token) ? vowelHoldDuration(speed, duration, true) : null;
 
-        let pitch = decPitches[upbeat[0]];
+        let pitch = decPitchForNote(upbeat);
 
         r += slidePitch(phone, pitch, slideDuration, holdDuration);
     }
@@ -385,12 +405,12 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
         let slideDuration = 20; // for consonants
         let holdDuration = null; // for consonants
 
-        let pitch = decPitches[notes[1][0]];
+        let pitch = decPitchForNote(notes[1]);
 
         if (vowels.includes(token)) {
             let slideDuration = 50;
             for (note of notes.slice(1)) {
-                let pitch = decPitches[note[0]];
+                let pitch = decPitchForNote(note);
                 let duration = note[1];
                 let holdDuration = vowelHoldDuration(speed, duration);
                 
@@ -399,7 +419,7 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
             afterVowel = true;
         } else {
             if (afterVowel) {
-                pitch = decPitches[downbeat[0]];
+                pitch = decPitchForNote(downbeat);
             }
             r += slidePitch(phone, pitch, slideDuration, holdDuration);
         }
@@ -409,7 +429,7 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
             continue;
         }
         
-        let pitch = decPitches[downbeat[0]];
+        let pitch = decPitchForNote(downbeat);
 
         let phone = decPronunciation(phonemes, [token]);
 
