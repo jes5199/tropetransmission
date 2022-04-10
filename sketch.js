@@ -130,17 +130,26 @@ const numericNotes = {
     "E": 24,
 }
 
-function decPitchForNote(note) {
+function decPitchForNote(note, transpose, detune) {
     if (Array.isArray(note)) {
         note = note[0];
     }
     if (typeof note != "number") {
         note = numericNotes[note];
     }
-    let transposedNote = note + 30 + 5 - 9;
+
+    if (!transpose) { 
+        transpose = 0;
+    }
+
+    if (!detune) {
+        detune = 0;
+    }
+
+    let transposedNote = note + transpose;
 
     let unbentValue = Math.round((2 ** (transposedNote / 12) ) * 13.75);
-    let value = unbentValue + 1 - 2;
+    let value = unbentValue + detune;
 
     return value;
 }
@@ -321,6 +330,10 @@ function textPronunciation(phonemes, tokens) {
 }
 
 function decPronunciation(phonemes, tokens) {
+    if (!Array.isArray(tokens)) {
+        tokens = [tokens];
+    }
+
     let r = "";
 
     for (const token of tokens) {
@@ -333,7 +346,7 @@ function decPronunciation(phonemes, tokens) {
     return r;
 }
 
-function slidePitch(phone, pitch, slideDuration, holdDuration) {
+function slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration) {
     if (!slideDuration) {slideDuration = ""}
     if (!holdDuration) {holdDuration = ""}
     if (!pitch) {pitch = ""} else {pitch = "5" + pitch}
@@ -361,6 +374,15 @@ function vowelHoldDuration(speed, duration, isUpbeat) {
     return holdLength;
 }
 
+function noteSlideAndHoldDuration(speed, noteOrDuration, isVowel, isUpbeat) {
+    let duration = Array.isArray(noteOrDuration) ?  noteOrDuration[1] : noteOrDuration;
+
+    let slideDuration = isVowel ? 50 : 20;
+    let holdDuration = isVowel ? vowelHoldDuration(speed, duration, isUpbeat) : null;
+
+    return [slideDuration, holdDuration];
+}
+
 function decSong(style, melody, phonemes, trope, speed, pitch) {
     if (!speed) { speed = 10; }
 
@@ -373,9 +395,12 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
 
     let notes = melody[tropeName]["Default"];
     let upbeat = notes[0];
+    let tropeStartNote = notes.length > 1 ? notes[1] : notes[0];
+    let tropeEndNote = notes[notes.length - 1];
 
-    let downbeat = notes[notes.length - 1];
     let r = "";
+
+    let transpose = 30 + 5 - 9; // FIXME
 
     for (token of preTrope) {
         if (silent.includes(token)) {
@@ -383,15 +408,14 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
         }
 
         let phone = decPronunciation(phonemes, [token]);
+        let isVowel = vowels.includes(token);
 
-        // TODO: extract this into a function
-        let duration = upbeat[1];
-        let slideDuration = vowels.includes(token) ? 50 : 20;
-        let holdDuration = vowels.includes(token) ? vowelHoldDuration(speed, duration, true) : null;
+        let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, upbeat, isVowel, true);
 
-        let pitch = decPitchForNote(upbeat);
+        let detune = isVowel ? -1 * pitchbend : 0;
+        let pitch = decPitchForNote(upbeat, transpose, detune);
 
-        r += slidePitch(phone, pitch, slideDuration, holdDuration);
+        r += slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration);
     }
 
     let afterVowel = false;
@@ -400,28 +424,28 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
             continue;
         }
 
-        let phone = decPronunciation(phonemes, [token]);
-
-        let slideDuration = 20; // for consonants
-        let holdDuration = null; // for consonants
-
-        let pitch = decPitchForNote(notes[1]);
+        let phone = decPronunciation(phonemes, token);
 
         if (vowels.includes(token)) {
-            let slideDuration = 50;
+            let noteCount = 0;
             for (note of notes.slice(1)) {
-                let pitch = decPitchForNote(note);
-                let duration = note[1];
-                let holdDuration = vowelHoldDuration(speed, duration);
+                noteCount += 1; 
+                 // this doesn't seem likely but it technically works for beresheis
+                 // let's play with it.
+                let detune = (noteCount % 3) * -pitchbend;
+
+                let pitch = decPitchForNote(note, transpose, detune);
+                let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, note, true, false);
                 
-                r += slidePitch(phone, pitch, slideDuration, holdDuration);
+                r += slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration);
             }
             afterVowel = true;
-        } else {
-            if (afterVowel) {
-                pitch = decPitchForNote(downbeat);
-            }
-            r += slidePitch(phone, pitch, slideDuration, holdDuration);
+        } else {  // consonants
+            let note = !afterVowel ? tropeStartNote : tropeEndNote;
+            let pitch = decPitchForNote(note, transpose);
+            let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, note, false, false);
+
+            r += slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration);
         }
     }
     for (token of postTrope) {
@@ -429,16 +453,16 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
             continue;
         }
         
-        let pitch = decPitchForNote(downbeat);
-
         let phone = decPronunciation(phonemes, [token]);
+        let isVowel = vowels.includes(token);
 
-        let duration = downbeat[1];
-        let slideDuration = vowels.includes(token) ? 50 : 20;
-        let holdDuration = vowels.includes(token) ? vowelHoldDuration(speed, duration) : null;
+        let pitch = decPitchForNote(tropeEndNote, transpose);
+        let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, tropeEndNote, isVowel, false);
 
-        r += slidePitch(phone, pitch, slideDuration, holdDuration);
+        r += slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration);
     }
+
+    r += "_<71,>"; // end of word. does this ever vary?
 
     return r;
 }
