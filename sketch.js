@@ -243,12 +243,12 @@ function decPitchForNote(note, transpose, detune) {
     }
 
     let transposedNote = note + transpose + 30 + 5 - 9;
+    let frequency = Math.round((2 ** (transposedNote / 12) ) * 13.75);
 
-    let unbentValue = Math.round((2 ** (transposedNote / 12) ) * 13.75);
-    let value = unbentValue + detune;
-    console.log([unbentValue, value]);
+    let detunedFrequency = frequency + detune;
+    //console.log([frequency, detunedFrequency]);
 
-    return value;
+    return detunedFrequency;
 }
 
 const AshkenaziTraditionalPhonemes = {
