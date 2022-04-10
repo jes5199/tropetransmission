@@ -21,8 +21,8 @@
 - [X] reverse-engineer the pitch math
 - [X] figure out the transpose numbers for different vocal ranges
 - [X] fill out the real note numbers
-- [ ] use real note numbers in math
-- [ ] figure out how pitchbend really works
+- [X] use real note numbers in math
+- [X] figure out how pitchbend really works
 
 # Whole words
 - [X] compare Beresheis texts at various speeds/pitches

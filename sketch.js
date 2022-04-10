@@ -242,7 +242,7 @@ function decPitchForNote(note, transpose, detune) {
         detune = 0;
     }
 
-    let transposedNote = note + transpose;
+    let transposedNote = note + transpose + 30 + 5 - 9;
 
     let unbentValue = Math.round((2 ** (transposedNote / 12) ) * 13.75);
     let value = unbentValue + detune;
@@ -508,8 +508,7 @@ function decSong(style, melody, phonemes, trope, speed, voice, pitchOffset) {
 
     let r = "";
 
-    
-    let transpose = 21 + voicePitchOffset[voice] + pitchOffset - 5 + 15 + 5 - 9; // FIXME: magic numbers
+    let transpose = voicePitchOffset[voice] + pitchOffset + pitchbend;
 
     for (token of preTrope) {
         if (silent.includes(token)) {
