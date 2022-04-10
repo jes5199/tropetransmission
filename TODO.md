@@ -34,6 +34,9 @@
 - [ ] research "Aleph" skipping
 - [ ] fix decPronunciation() to follow same rules as tropeForTokenizedWord()
 
+# Other stuff
+- [ ] what is "Extra" or "Continue" on a note?
+
 # Interface
 - [ ] figure out color-coding rules
 - [ ] output Hebrew while singing

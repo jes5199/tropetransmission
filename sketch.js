@@ -121,7 +121,7 @@ const AveryBinderMelody = {
 }
 
 
-const realNumericNotes = {
+const numericNote = {
     "3x":  1.5,
     "3#":  2.0,
     "4-":  2.0,
@@ -226,22 +226,12 @@ const realNumericNotes = {
 
 }
 
-const numericNotes = {
-    "f": 13,
-    "g": 15,
-    "a": 17,
-    "b": 19,
-    "C": 20,
-    "D": 22,
-    "E": 24,
-}
-
 function decPitchForNote(note, transpose, detune) {
     if (Array.isArray(note)) {
         note = note[0];
     }
     if (typeof note != "number") {
-        note = numericNotes[note];
+        note = numericNote[note];
     }
 
     if (!transpose) { 
@@ -518,7 +508,7 @@ function decSong(style, melody, phonemes, trope, speed, range, pitch) {
 
     let r = "";
 
-    let transpose = lowNoteForRange[range] + pitch + 15 + 5 - 9; // FIXME: magic numbers
+    let transpose = lowNoteForRange[range] + pitch - 5 + 15 + 5 - 9; // FIXME: magic numbers
 
     for (token of preTrope) {
         if (silent.includes(token)) {
