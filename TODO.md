@@ -20,12 +20,13 @@
 # Pitch
 - [X] reverse-engineer the pitch math
 - [X] figure out the transpose numbers for different vocal ranges
+- [ ] fill out the real note numbers
 - [ ] figure out how pitchbend really works
 
 # Whole words
 - [X] compare Beresheis texts at various speeds/pitches
 - [X] add stop phoneme at the add of the word
-- [ ] check stop phoneme rules
+- [ ] adjust stop phoneme duration by speed
 
 # Silent letters
 - [ ] fix "Yud" skipping to be more correct

@@ -120,6 +120,112 @@ const AveryBinderMelody = {
     }
 }
 
+
+const realNumericNotes = {
+    "3x":  1.5,
+    "3#":  2.0,
+    "4-":  2.0,
+    "4/":  2.5,
+    "4" :  3.0,
+    "4x":  3.5,
+    "4#":  4.0,
+    "5-":  4.0,
+    "5/":  4.5,
+    "5" :  5.0,
+    "5x":  5.5,
+    "6/":  5.5,
+    "6" :  6.0,
+    "6x":  6.5,
+    "6#":  7.0,
+    "7-":  7.0,
+    "7/":  7.5,
+    "7" :  8.0,
+    "7x":  8.5,
+    "7#":  9.0,
+    "1-":  9.0,
+    "1/":  9.5,
+    "1" : 10.0,
+    "1x": 10.5,
+    "1#": 11.0,
+    "2-": 11.0,
+    "2/": 11.5,
+    "2" : 12.0,
+    "2x": 12.5,
+    "c/": 12.5,
+    "c" : 13.0,
+    "cx": 13.5,
+    "c#": 14.0,
+    "d-": 14.5,
+    "d/": 14.5,
+    "d" : 15.0,
+    "dx": 15.5,
+    "d#": 16.0,
+    "e-": 16.0,
+    "e/": 16.5,
+    "e" : 17.0,
+    "ex": 17.5,
+    "f/": 17.5,
+    "f" : 18.0,
+    "fx": 18.5,
+    "f#": 19.0,
+    "g-": 19.0,
+    "g/": 19.5,
+    "g" : 20.0,
+    "gx": 20.5,
+    "g#": 21.0,
+    "a-": 21.0,
+    "a/": 21.5,
+    "a" : 22.0,
+    "ax": 22.5,
+    "a#": 23.0,
+    "b-": 23.0,
+    "b/": 23.5,
+    "b" : 24.0,
+    "bx": 24.5,
+    "C/": 24.5,
+    "C" : 25.0,
+    "Cx": 25.5,
+    "C#": 26.0,
+    "D-": 26.0,
+    "D/": 26.5,
+    "D" : 27.0,
+    "Dx": 27.5,
+    "D#": 28.0,
+    "E-": 28.0,
+    "E/": 28.5,
+    "E" : 29.0,
+    "Ex": 29.5,
+    "F/": 29.5,
+    "F" : 30.0,
+    "Fx": 30.5,
+    "F#": 31.0,
+    "Gb": 31.0,
+    "G/": 31.5,
+    "G" : 32.0,
+    "Gx": 32.5,
+    "G#": 33.0,
+    "A-": 33.0,
+    "A/": 33.5,
+    "A" : 34.0,
+    "Ax": 34.5,
+    "A#": 35.0,
+    "B-": 35.0,
+    "B/": 35.5,
+    "B" : 36.0,
+    "Bx": 36.5,
+    "H/": 36.5,
+    "H" : 37.0,
+    "Hx": 37.5,
+    "H#": 38.0,
+    "I-": 38.0,
+    "I/": 38.5,
+    "I" : 39.0,
+    "Ix": 39.5,
+    "I#": 40.0,
+    "J-": 40.0,
+
+}
+
 const numericNotes = {
     "f": 13,
     "g": 15,
@@ -150,6 +256,7 @@ function decPitchForNote(note, transpose, detune) {
 
     let unbentValue = Math.round((2 ** (transposedNote / 12) ) * 13.75);
     let value = unbentValue + detune;
+    console.log([unbentValue, value]);
 
     return value;
 }
@@ -423,7 +530,7 @@ function decSong(style, melody, phonemes, trope, speed, range, pitch) {
 
         let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, upbeat, isVowel, true);
 
-        let detune = isVowel ? -1 * pitchbend : 0;
+        let detune = (isVowel ? Math.floor(Math.random() * 3) - 2 : 0);
         let pitch = decPitchForNote(upbeat, transpose, detune);
 
         r += slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration);
@@ -441,9 +548,7 @@ function decSong(style, melody, phonemes, trope, speed, range, pitch) {
             let noteCount = 0;
             for (note of notes.slice(1)) {
                 noteCount += 1; 
-                 // this doesn't seem likely but it technically works for beresheis
-                 // let's play with it.
-                let detune = (noteCount % 3) * -pitchbend;
+                let detune = Math.floor(Math.random() * 3) - 2;
 
                 let pitch = decPitchForNote(note, transpose, detune);
                 let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, note, true, false);
@@ -453,7 +558,7 @@ function decSong(style, melody, phonemes, trope, speed, range, pitch) {
             afterVowel = true;
         } else {  // consonants
             let note = !afterVowel ? tropeStartNote : tropeEndNote;
-            let pitch = decPitchForNote(note, transpose);
+            let pitch = decPitchForNote(note, transpose, 0);
             let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, note, false, false);
 
             r += slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration);
@@ -466,14 +571,15 @@ function decSong(style, melody, phonemes, trope, speed, range, pitch) {
         
         let phone = decPronunciation(phonemes, [token]);
         let isVowel = vowels.includes(token);
+        let detune = (isVowel ? Math.floor(Math.random() * 3) - 2 : 0);
 
-        let pitch = decPitchForNote(tropeEndNote, transpose);
+        let pitch = decPitchForNote(tropeEndNote, transpose, detune);
         let [slideDuration, holdDuration] = noteSlideAndHoldDuration(speed, tropeEndNote, isVowel, false);
 
         r += slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration);
     }
 
-    r += "_<71,>"; // end of word. does this ever vary?
+    r += "_<71,>"; // end of word. FIXME: adjust duration by speed
 
     return r;
 }
@@ -533,7 +639,7 @@ async function tests() {
     //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
 
     let speed = 3;
-    let range = "Bass";
+    let range = "Baritone";
     let pitch = 0;
 
     let song = decSong(

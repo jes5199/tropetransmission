@@ -36,7 +36,7 @@ int __cdecl main(int argc, char *argv[]) {
 
 	tropeInit = GetProcAddress(tropeTalkLib, "L1");
 	tropeVoice = GetProcAddress(tropeTalkLib, "L2");
-	trope3 = GetProcAddress(tropeTalkLib, "L3");
+	trope3 = GetProcAddress(tropeTalkLib, "L3"); // exit
 	tropeSpeak = GetProcAddress(tropeTalkLib, "L4");
 	trope5 = GetProcAddress(tropeTalkLib, "L5");
 	trope6 = GetProcAddress(tropeTalkLib, "L6");
