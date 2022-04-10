@@ -528,6 +528,8 @@ async function tests() {
     console.log(tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)));
 
     console.log(textPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
+
+    // FIXME: decPronunciation should respect silent letters
     //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
 
     let speed = 3;
