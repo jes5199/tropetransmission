@@ -20,7 +20,8 @@
 # Pitch
 - [X] reverse-engineer the pitch math
 - [X] figure out the transpose numbers for different vocal ranges
-- [ ] fill out the real note numbers
+- [X] fill out the real note numbers
+- [ ] use real note numbers in math
 - [ ] figure out how pitchbend really works
 
 # Whole words
