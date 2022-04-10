@@ -323,13 +323,13 @@ const voices = {
     "Child": "Kit"
 };
 
-const lowNoteForRange = {
-    "Bass": 9,
-    "Baritone": 15,
-    "Tenor": 21,
-    "Alto": 21,
-    "Soprano": 27,
-    "Child": 27
+const voicePitchOffset = {
+    "Bass": -12,
+    "Baritone": -6,
+    "Tenor": 0,
+    "Alto": 0,
+    "Soprano": 6,
+    "Child": 6
 }
 
 function unicodeHebrewWordToTokens(hebrewGlyphString) {
@@ -489,10 +489,10 @@ function noteSlideAndHoldDuration(speed, noteOrDuration, isVowel, isUpbeat) {
     return [slideDuration, holdDuration];
 }
 
-function decSong(style, melody, phonemes, trope, speed, range, pitch) {
+function decSong(style, melody, phonemes, trope, speed, voice, pitchOffset) {
     if (!speed) { speed = 10; }
-    if (!range) { range = "Baritone"; }
-    if (!pitch) { pitch = 0; }
+    if (!voice) { voice = "Baritone"; }
+    if (!pitchOffset) { pitchOffset = 0; }
 
     let pitchbend = style.pitchbend;
 
@@ -508,7 +508,8 @@ function decSong(style, melody, phonemes, trope, speed, range, pitch) {
 
     let r = "";
 
-    let transpose = lowNoteForRange[range] + pitch - 5 + 15 + 5 - 9; // FIXME: magic numbers
+    
+    let transpose = 21 + voicePitchOffset[voice] + pitchOffset - 5 + 15 + 5 - 9; // FIXME: magic numbers
 
     for (token of preTrope) {
         if (silent.includes(token)) {
