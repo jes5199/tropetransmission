@@ -1,3 +1,4 @@
+- [ ] remove my-machine-specific stuff from tropesay
 - [ ] make tropesay speak on newlines
 - [ ] hold open a single tropesay process when running js
 - [ ] tropesay can be interrupted by sending ESC character
