@@ -2,6 +2,7 @@ const { chdir } = require("process");
 
 
 let inTheBeginning = "בְּרֵאשִׁ֖ית"
+let created = "בָּרָ֣א"
 
 
 const charNames = {
@@ -20,6 +21,7 @@ const charNames = {
     "\u05b0": "Shva",
     "\u05b4": "Chirik",
     "\u05b5": "Tsere",
+    "\u05b8" : "QamatzGadol",
 
     // consonant disambiguations
     "\u05bc": "Dagesh", // dot for Vet -> Bet, etc
@@ -29,6 +31,7 @@ const charNames = {
 
     // cantillation marks
     "\u0596": "Tipcha",
+    "\u05a3": "Munach",
 };
 
 const dageshNames = {
@@ -45,7 +48,8 @@ const consonants = [
 
 const vowels = [
     "Shva", "ShvaNa", "ShvaNach",
-    "Chirik", "Tsere"
+    "Chirik", "Tsere",
+    "QamatzGadol"
 ];
 
 const silent = [
@@ -57,7 +61,7 @@ const dots = [
 ];
 
 const tropes = [
-    "Tipcha"
+    "Tipcha", "Munach"
 ];
 
 
@@ -117,7 +121,20 @@ const AveryBinderMelody = {
             ["C", 12],
             ["g", 8]
         ]
-    }
+    },
+    "Munach": {
+        "Default1": [
+            ["C", 8], 
+            ["C", 12],
+            ["a", 12],
+            ["C", 4]
+        ],
+        "Default": [
+            ["g", 8], 
+            ["f", 8],
+            ["d", 8],
+        ]
+    }   
 }
 
 
@@ -619,14 +636,16 @@ function decSing(phones, speed, range) {
 
 
 async function tests() {
-    console.log(unicodeHebrewWordToTokens(inTheBeginning));
+    let word = created;
 
-    console.log(tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)));
+    console.log(unicodeHebrewWordToTokens(word));
 
-    console.log(textPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
+    console.log(tropeForTokenizedWord(unicodeHebrewWordToTokens(word)));
+
+    console.log(textPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(word)));
 
     // FIXME: decPronunciation should respect silent letters
-    //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(inTheBeginning)));
+    //console.log(decPronunciation(AshkenaziTraditionalPhonemes, unicodeHebrewWordToTokens(word)));
 
     let speed = 3;
     let range = "Baritone";
@@ -636,7 +655,7 @@ async function tests() {
         AveryBinderStyle,
         AveryBinderMelody,
         AshkenaziTraditionalPhonemes,
-        tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)),
+        tropeForTokenizedWord(unicodeHebrewWordToTokens(word)),
         speed,
         range,
         pitch

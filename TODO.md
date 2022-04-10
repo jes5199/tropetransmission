@@ -29,15 +29,18 @@
 - [X] add stop phoneme at the add of the word
 - [ ] adjust stop phoneme duration by speed
 
-# Silent letters
+# Silent letters and homographs
 - [ ] fix "Yud" skipping to be more correct
 - [ ] research "Aleph" skipping
 - [ ] fix decPronunciation() to follow same rules as tropeForTokenizedWord()
+- [ ] distinguish Qamatz Gadol from Qamatz Qatan
 
 # Other stuff
 - [ ] what is "Extra" or "Continue" on a note?
+- [ ] what does "Enable Elision" do?
 
 # Interface
 - [ ] figure out color-coding rules
 - [ ] output Hebrew while singing
 - [ ] read entire verses
+- [ ] show alternate names for tropes
