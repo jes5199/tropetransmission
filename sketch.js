@@ -226,6 +226,15 @@ const voices = {
     "Child": "Kit"
 };
 
+const lowNoteForRange = {
+    "Bass": 9,
+    "Baritone": 15,
+    "Tenor": 21,
+    "Alto": 21,
+    "Soprano": 27,
+    "Child": 27
+}
+
 function unicodeHebrewWordToTokens(hebrewGlyphString) {
     // each mark in a hebrew word is a separate unicode character
     let r = [];
@@ -383,8 +392,10 @@ function noteSlideAndHoldDuration(speed, noteOrDuration, isVowel, isUpbeat) {
     return [slideDuration, holdDuration];
 }
 
-function decSong(style, melody, phonemes, trope, speed, pitch) {
+function decSong(style, melody, phonemes, trope, speed, range, pitch) {
     if (!speed) { speed = 10; }
+    if (!range) { range = "Baritone"; }
+    if (!pitch) { pitch = 0; }
 
     let pitchbend = style.pitchbend;
 
@@ -400,7 +411,7 @@ function decSong(style, melody, phonemes, trope, speed, pitch) {
 
     let r = "";
 
-    let transpose = 30 + 5 - 9; // FIXME
+    let transpose = lowNoteForRange[range] + pitch + 15 + 5 - 9; // FIXME: magic numbers
 
     for (token of preTrope) {
         if (silent.includes(token)) {
@@ -521,13 +532,16 @@ async function tests() {
 
     let speed = 3;
     let range = "Bass";
+    let pitch = 0;
 
     let song = decSong(
         AveryBinderStyle,
         AveryBinderMelody,
         AshkenaziTraditionalPhonemes,
         tropeForTokenizedWord(unicodeHebrewWordToTokens(inTheBeginning)),
-        speed
+        speed,
+        range,
+        pitch
     );
 
     console.log(song);
