@@ -3,11 +3,12 @@
 - [ ] tropesay can be interrupted by sending ESC character
 - [ ] tropesay over TCP/IP
 - [ ] tropesay can save files
+- [ ] tropesay MIDI instrument
 
 - [ ] move trope defs to a separate file
 - [ ] combine style and melody into a big object
 - [ ] add a Sephardic example
-- [ ] process entire tropedef into js structs
+- [ ] process entire tropedef.xml into js structs
 
 - [X] check the duration math for very fast speeds
 - [X] check the duration math for each note in the trope
