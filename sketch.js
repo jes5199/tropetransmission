@@ -13,16 +13,33 @@ const charNames = {
     // consonants
     "א": "Aleph",
     "ב": "Vet",
+
+    "ה": "He",
+    "ו": "Vav",
+
     "י": "Yud",
+
+    "ל": "Lamed",
+    "מ": "Mem",
+
+    "ם": "Samech",
+
+    "ץ": "Tsade", // Final
+
     "ר": "Resh",
     "ש": "Shin",
     "ת": "Sav",
 
+
     // vowels
     "\u05b0": "Shva",
+    "\u05b1": "ChatafSegol",
     "\u05b4": "Chirik",
     "\u05b5": "Tsere",
-    "\u05b8" : "QamatzGadol",
+    "\u05b6": "Segol",
+    "\u05b7": "Patach",
+    "\u05b8": "QamatzGadol",
+    "\u05b9": "Holam",
 
     // consonant disambiguations
     "\u05bc": "Dagesh", // dot for Vet -> Bet, etc
@@ -31,28 +48,35 @@ const charNames = {
     "\u05c2": "Sin Dot",
 
     // cantillation marks
-    "\u05c3": "Sof Pasuk",
     "\u0591": "Etnachta",
     "\u0596": "Tipcha",
     "\u05a3": "Munach",
+    "\u05a5": "Mercha",
+    "\u05bd": "Silluq", // sometimes might actually be a Meteg
+    "\u05c3": "Sof Pasuk",
 };
 
 const dageshNames = {
     "Vet": "Bet",
     "Sav": "Tav",
+    "Shin": "ShinD",
 };
 
 const consonants = [
     "Aleph", "Bet", "Vet",
+    "He",
     "Yud",
-    "Resh",
-    "Shin", "Sin", "Tav", "Sav"
+    "Lamed", "Mem", "Nun",
+    "Samech",
+    "Tsade", "Qof", "Resh",
+    "Shin", "ShinD", "Sin", "SinD", "Tav", "Sav"
 ]
 
 const vowels = [
     "Shva", "ShvaNa", "ShvaNach",
-    "Chirik", "Tsere",
-    "QamatzGadol"
+    "ChatafSegol",
+    "Chirik", "Segol", "Tsere",
+    "Patach", "QamatzGadol", "Holam",
 ];
 
 const silent = [
@@ -64,7 +88,8 @@ const dots = [
 ];
 
 const tropes = [
-    "Etnachta", "Tipcha", "Munach"
+    "Etnachta", "Tipcha", "Munach", "Mercha",
+    "Silluq", "Sof Pasuk", 
 ];
 
 const phraseEndingTropes = [
@@ -379,6 +404,8 @@ function unicodeHebrewWordToTokens(hebrewGlyphString) {
             const oldName = r[r.length - 1];
             if (oldName == "Sin" || oldName == "Shin") {
                 r[r.length - 1] = "Shin";
+            } else if (oldName == "SinD" || oldName == "ShinD") {
+                r[r.length - 1] = "ShinD";
             } else {
                 console.log("cannon convert to Shin from", oldName)
             }
@@ -386,6 +413,8 @@ function unicodeHebrewWordToTokens(hebrewGlyphString) {
             const oldName = r[r.length - 1];
             if (oldName == "Sin" || oldName == "Shin") {
                 r[r.length - 1] = "Sin";
+            } else if (oldName == "SinD" || oldName == "ShinD") {
+                r[r.length - 1] = "SinD";
             } else {
                 console.log("cannot convert to Sin from", oldName)
             }
@@ -649,7 +678,17 @@ function decSing(phones, speed, range) {
 
 function parseVerse(verse) {
     let words = verse.split(" ");
+    
+    let tropes = [];
+    // find trope for each word
+    for(index in words) {
+        let word = words[index];
+        tropes.push(tropeForTokenizedWord(unicodeHebrewWordToTokens(word)));
+    }
+    return tropes;
+
     // divide into phrases
+
 
 }
 
