@@ -4,10 +4,11 @@ const { chdir } = require("process");
 let inTheBeginning = "בְּרֵאשִׁ֖ית"
 let created = "בָּרָ֣א"
 
+let GenesisOneOne = "בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים אֵ֥ת הַשָּׁמַ֖יִם וְאֵ֥ת הָאָֽרֶץ׃"
 
 const charNames = {
-    // I'm using the names as seen in TropeTalk 3, when available
-    // this is different than the official unicode names
+    // I'm using the names as seen in TropeTalk 3, when available.
+    // This is different than the official unicode names.
 
     // consonants
     "א": "Aleph",
@@ -30,6 +31,8 @@ const charNames = {
     "\u05c2": "Sin Dot",
 
     // cantillation marks
+    "\u05c3": "Sof Pasuk",
+    "\u0591": "Etnachta",
     "\u0596": "Tipcha",
     "\u05a3": "Munach",
 };
@@ -61,8 +64,16 @@ const dots = [
 ];
 
 const tropes = [
-    "Tipcha", "Munach"
+    "Etnachta", "Tipcha", "Munach"
 ];
+
+const phraseEndingTropes = [
+    "Etnachta"
+]
+
+const verseEndingTropes = [
+    "Sof Pasuk"
+]
 
 
 const RosowskyHighSilluqStyle = {
@@ -123,6 +134,8 @@ const AveryBinderMelody = {
         ]
     },
     "Munach": {
+        // FIXME: this struct isn't gonna work for all the complex contexts in the XML
+        //        it doesn't even actualy work for the second word in Genesis
         "Default1": [
             ["C", 8], 
             ["C", 12],
@@ -634,6 +647,12 @@ function decSing(phones, speed, range) {
     decTalk(text);
 }
 
+function parseVerse(verse) {
+    let words = verse.split(" ");
+    // divide into phrases
+
+}
+
 
 async function tests() {
     let word = created;
@@ -665,7 +684,17 @@ async function tests() {
 
 //    await decTalk("[:name Paul] aeiou");
 
-    await decSing(song, speed, range);
+    let singing = decSing(song, speed, range);
+
+    tests2();
+
+    await singing;
 }
+
+async function tests2() {
+    // WIP
+    console.log(parseVerse(GenesisOneOne));
+}
+
 
 tests();

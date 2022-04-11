@@ -39,6 +39,10 @@
 - [ ] what is "Extra" or "Continue" on a note?
 - [ ] what does "Enable Elision" do?
 
+# Tropes
+- [ ] parse a whole verse into its tropes
+- [ ] pause longer after Etnachta
+
 # Interface
 - [ ] figure out color-coding rules
 - [ ] output Hebrew while singing

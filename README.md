@@ -50,18 +50,18 @@ and sings with DECtalk as:
 [~b<20,5147>~b<,5147>~eh<50,5146>~eh<53,5146>~sp_rr<20,5147>~sp_rr<,5147>~uk_ey<50,5146>~uk_ey<51,5146>~sh<20,5165>~sh<,5165>~iy<50,5164>~iy<42,5164>~iy<50,5194>~iy<25,5194>~iy<50,5147>~iy<59,5147>~s<20,5147>~s<,5147>_<71,>]  
 ```
 
-Each phoneme in DECtalk has an optional duration and pitch specification. The four-digit pitch notation is TropeTrainer-specific and is not supported by other copies of DECtalk.
+Each phoneme in DECtalk has an optional duration and pitch specification. The four-digit pitch notation is TropeTrainer-specific and is not supported by other copies of DECtalk. The first digit controls volume, and the next three are the pitch in Hz. Trope Trainer always uses volume 5.
 
 ```
-~b<20,5147> = "buh" 20 milliseconds, 5 volume, 14.7 pitch
+~b<20,5147> = "buh" 20 milliseconds, 5 volume, 147Hz pitch
 ```
 
 Also unique to TT's copy of DECTalk is pitch slides. A phoneme with a four-digit pitch will slide from the previous pitch to the target pitch over the entire duration of the phoneme. TT repeats phonemes so that it can sling a slide for 50ms followed by holding the pitch for the rest of the syllable's duration:
 
 ```
-~b<20,5147>   brief "buh" at pitch 14.7
-~eh<50,5146>  slide down on "eh" to 14.6 for 50ms
-~eh<53,5146>  hold "eh" at 14.6 for 53ms
+~b<20,5147>   brief "buh" at pitch 147
+~eh<50,5146>  slide down on "eh" to 146 for 50ms
+~eh<53,5146>  hold "eh" at 146 for 53ms
 ```
 
 Each tropedef has some global definitions for its melody style:
@@ -77,8 +77,8 @@ Each tropedef has some global definitions for its melody style:
 
 ```
 
-I believe that that PITCHBEND=1 means each syllable's first consonant is 0.1 semitones higher than the following vowel. Other TROPEDEF entries have negative PITCHBEND, and some are set to zero.
+PITCHBEND is a number of semitones to transpose the notes by - Avery/Binder is written in C major, but here it's actually sung in C# major.
 
-I am not sure why pitch 14.6 is "a4" - it seems unrelated to standard DECtalk's tone tables, and may be related to ASSIMILATE_PITCH="False" - but all of the Tropes in TT3 have ASSIMILATE_PITCH set to False!
+Vowel pitches are lowered randomly, by 0, 1, or 2 Hz.
 
-The duration math is complicated! TODO: explain it.
+Note duration in the XML is defined a fractions of a whole note - DURATION="8" is an 8th note. A whole note is defined as 120000 milliseconds divided by (20 + 12 * speed), where speed can be 1 to 25 (the default speed is 10). When sung, each note's duration is randomly extended by up to 10% of the note length.
