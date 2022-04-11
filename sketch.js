@@ -13,23 +13,31 @@ const charNames = {
     // consonants
     "א": "Aleph",
     "ב": "Vet",
-
+    "ג": "Gimel",
+    "ד": "Dalet",
     "ה": "He",
     "ו": "Vav",
-
+    "ז": "Zayin",
+    "ח": "Chet",
+    "ט": "Tet",
     "י": "Yud",
-
+    "כ": "Chaf",
+    "ך": "Chaf", // Final
     "ל": "Lamed",
     "מ": "Mem",
-
-    "ם": "Samech",
-
+    "ם": "Mem", // Final
+    "נ": "Nun",
+    "ן": "Nun", // Final
+    "ס": "Samech",
+    "ע": "Ayin",
+    "פ": "Feh",
+    "ף": "Feh", // Final
+    "צ": "Tsade",
     "ץ": "Tsade", // Final
-
+    "ק": "Qof",
     "ר": "Resh",
     "ש": "Shin",
     "ת": "Sav",
-
 
     // vowels
     "\u05b0": "Shva",
