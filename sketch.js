@@ -626,6 +626,7 @@ function decSong(style, melody, phonemes, trope, speed, voice, pitchOffset) {
             continue;
         }
 
+        // TODO: dipthongs from 004F4254
         let phone = decPronunciation(phonemes, token);
 
         if (vowels.includes(token)) {
