@@ -117,14 +117,14 @@ const RosowskyHighSilluqStyle = {
 }
 
 const RosowskyHighSilluqMelody = {
-    "Tipcha": {
-        "Default": [
+    "Tipcha": [
+        ["Default", [
             ["a", 8], 
             ["a", 10],
             ["C", 10],
             ["g", 8]
-        ]
-    }
+        ]]
+    ]
 }
 
 function decRateForSpeed(speed)  {
@@ -139,14 +139,14 @@ const AveryBinderHighSofPasukStyle = {
 }
 
 const AveryBinderHighSofPasukMelody = {
-    "Tipcha": {
-        "Default": [
+    "Tipcha": [
+        ["Default", [
             ["g", 8], 
             ["a", 10],
             ["C", 12],
             ["g", 8]
-        ]
-    }
+        ]]
+    ]
 }
 
 
@@ -158,29 +158,27 @@ const AveryBinderStyle = {
 }
 
 const AveryBinderMelody = {
-    "Tipcha": {
-        "Default": [
+    "Tipcha": [
+        ["Default", [
             ["g", 8], 
             ["a", 10],
             ["C", 12],
             ["g", 8]
-        ]
-    },
-    "Munach": {
-        // FIXME: this struct isn't gonna work for all the complex contexts in the XML
-        //        it doesn't even actualy work for the second word in Genesis
-        "Default1": [
+        ]]
+    ],
+    "Munach": [
+        ["Default", [
             ["C", 8], 
             ["C", 12],
             ["a", 12],
             ["C", 4]
-        ],
-        "Default": [
+        ]],
+        [{before: "Etnachta"}, [
             ["g", 8], 
             ["f", 8],
             ["d", 8],
-        ]
-    }   
+        ]],
+    ]   
 }
 
 
@@ -556,6 +554,24 @@ function noteSlideAndHoldDuration(speed, noteOrDuration, isVowel, isUpbeat) {
     return [slideDuration, holdDuration];
 }
 
+function findMatchingRule(tropeRules, tropeContext) {
+    let defaultRule = tropeRules.find(([context, notes]) => {return context == "Default"});
+
+    let bestRule = tropeRules.find(([ruleContext, notes]) => {
+        if (ruleContext == "Default") { return false }
+        for (key in ruleContext) {
+            console.log(key);
+            if (ruleContext[key] != tropeContext[key]) {
+                console.log([key, ruleContext[key], tropeContext[key] ])
+                return false;
+            }
+        }
+        return true;
+    });
+
+    return bestRule || defaultRule;
+}
+
 function decSong(style, melody, phonemes, trope, speed, voice, pitchOffset) {
     if (!speed) { speed = 10; }
     if (!voice) { voice = "Baritone"; }
@@ -567,8 +583,13 @@ function decSong(style, melody, phonemes, trope, speed, voice, pitchOffset) {
     let preTrope = trope[1];
     let onTrope = trope[2];
     let postTrope = trope[3];
+    let tropeContext = trope[4] || {};
 
-    let notes = melody[tropeName]["Default"];
+    let tropeRules = melody[tropeName];
+    let matchingRule = findMatchingRule(tropeRules, tropeContext);
+
+    let [defaultRuleContext, notes] = matchingRule;
+
     let upbeat = notes[0];
     let tropeStartNote = notes.length > 1 ? notes[1] : notes[0];
     let tropeEndNote = notes[notes.length - 1];
@@ -702,12 +723,19 @@ function contextForTropes(tropes) {
         let previousTrope = index > 0 ? tropes[index - 1] : null;
         let nextTrope = index < tropes.length - 1 ? tropes[index + 1] : null;
 
+        let previousPreviousTrope = index > 1 ? tropes[index - 2] : null;
+        let nextNextTrope = index < tropes.length - 2 ? tropes[index + 2] : null;
+
         let phraseEndIndex = tropes.findIndex( (tr, i) => { return i >= index && (phraseEndingTropes.includes(tr[0]) || verseEndingTropes.includes(tr[0])) });
         let groupTrope = tropes[phraseEndIndex];
 
         let context = {
+            afterAfter: previousPreviousTrope ? previousPreviousTrope[0] : null,
             after: previousTrope ? previousTrope[0] : null,
+
             before: nextTrope ? nextTrope[0] : null,
+            beforeBefore: nextNextTrope ? nextNextTrope[0] : null,
+
             group: groupTrope ? groupTrope[0] : null,
         }
         results.push([...trope, context]);
@@ -767,7 +795,7 @@ async function tests2() {
         AveryBinderStyle,
         AveryBinderMelody,
         AshkenaziTraditionalPhonemes,
-        tropes[4],
+        tropes[1],
         speed,
         range,
         pitch
