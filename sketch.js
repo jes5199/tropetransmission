@@ -178,7 +178,13 @@ const AveryBinderMelody = {
             ["f", 8],
             ["d", 8],
         ]],
-    ]   
+    ],
+    "Etnachta": [
+        ["Default", [
+            ["c", 8],
+            ["g", 4],
+        ]]
+    ]
 }
 
 
@@ -520,7 +526,7 @@ function decPronunciation(phonemes, tokens) {
 function slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration) {
     if (!slideDuration) {slideDuration = ""}
     if (!holdDuration) {holdDuration = ""}
-    if (!pitch) {pitch = ""} else {pitch = "5" + pitch}
+    if (!pitch) {pitch = ""} else {pitch = 5000 + pitch}
 
     return phone + "<" + slideDuration + "," + pitch + ">" 
          + phone + "<" + holdDuration  + "," + pitch + ">";
@@ -795,7 +801,7 @@ async function tests2() {
         AveryBinderStyle,
         AveryBinderMelody,
         AshkenaziTraditionalPhonemes,
-        tropes[1],
+        tropes[2],
         speed,
         range,
         pitch
