@@ -317,7 +317,7 @@ function decPitchForNote(note, transpose, detune) {
 const AshkenaziTraditionalPhonemes = {
     "Silence": ["", ""],
     "Shuruk": ["~gr_u", "oo"],
-    "Patach": ["~ah,", "ah"],
+    "Patach": ["~ah", "ah"],
     "ChatafPatach": ["~ah", "ah"],
     "QamatzGadol": ["~sp_o", "o"],
     "QamatzQatan": ["~sp_o", "o"],
@@ -602,9 +602,9 @@ function decSong(style, melody, phonemes, trope, speed, voice, pitchOffset) {
         let phone = decPronunciation(phonemes, token);
 
         if (vowels.includes(token)) {
-            let noteCount = 0;
-            for (note of notes.slice(1)) {
-                noteCount += 1; 
+            let endNoteIndex = postTrope.length > 0 ? -1 : undefined;
+
+            for (note of notes.slice(1, endNoteIndex)) {
                 let detune = Math.floor(Math.random() * 3) - 2;
 
                 let pitch = decPitchForNote(note, transpose, detune);
@@ -684,7 +684,7 @@ function decSing(phones, speed, range) {
     decTalk(text);
 }
 
-function parseVerse(verse) {
+function parseTextIntoTropes(verse) {
     let words = verse.split(" ");
     
     let tropes = [];
@@ -732,16 +732,31 @@ async function tests() {
 //    await decTalk("[:name Paul] aeiou");
 
     let singing = decSing(song, speed, range);
-
-    tests2();
-
     await singing;
 }
 
 async function tests2() {
     // WIP
-    console.log(parseVerse(GenesisOneOne));
+    let tropes = parseTextIntoTropes(GenesisOneOne);
+    console.log(tropes);
+
+    let speed = 3;
+    let range = "Baritone";
+    let pitch = 0;
+
+    let song = decSong(
+        AveryBinderStyle,
+        AveryBinderMelody,
+        AshkenaziTraditionalPhonemes,
+        tropes[4],
+        speed,
+        range,
+        pitch
+    );
+    let singing = decSing(song, speed, range);
+    await singing;
+
 }
 
 
-tests();
+tests2();
