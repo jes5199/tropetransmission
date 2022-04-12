@@ -523,13 +523,35 @@ function decPronunciation(phonemes, tokens) {
     return r;
 }
 
-function slideAndThenHoldPitch(phone, pitch, slideDuration, holdDuration) {
+function splitPhoneme(decPhoneme) {
+    if (decPhoneme == "~gr_eu") {
+        return ["~gr_o", "~oy", "~yx"];
+    } else if (decPhoneme == "~gr_az") {
+        return ["~eh", "~gr_az"];
+    } else if (decPhoneme == "~gr_au") {
+        return ["~gr_a", "~gr_au_w"];
+    } else if (decPhoneme == "~gr_a~gr_j") {
+        return ["~gr_a", "~gr_a", "~gr_j"];
+    }
+    return [decPhoneme, decPhoneme];
+}
+
+function slideAndThenHoldPitch(decPhoneme, pitch, slideDuration, holdDuration) {
     if (!slideDuration) {slideDuration = ""}
     if (!holdDuration) {holdDuration = ""}
     if (!pitch) {pitch = ""} else {pitch = 5000 + pitch}
 
-    return phone + "<" + slideDuration + "," + pitch + ">" 
-         + phone + "<" + holdDuration  + "," + pitch + ">";
+    let parts = splitPhoneme(decPhoneme);
+
+    let r = "";
+    for ([index, phoneme] of parts.entries()) {
+        let duration = index == 0 ? slideDuration : Math.round(holdDuration / (parts.length - 1));
+        r += phoneme + "<" + duration + "," + pitch + ">";
+    }
+    return r;
+
+    //return decPhoneme + "<" + slideDuration + "," + pitch + ">" 
+    //     + decPhoneme + "<" + holdDuration  + "," + pitch + ">";
 }
 
 function vowelHoldDuration(speed, duration, isUpbeat) {
