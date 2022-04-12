@@ -545,7 +545,8 @@ function slideAndThenHoldPitch(decPhoneme, pitch, slideDuration, holdDuration) {
 
     let r = "";
     for ([index, phoneme] of parts.entries()) {
-        let duration = index == 0 ? slideDuration : Math.round(holdDuration / (parts.length - 1));
+        // seems like a bug in TT that diphongs get held extra long
+        let duration = index == 0 ? slideDuration : holdDuration;
         r += phoneme + "<" + duration + "," + pitch + ">";
     }
     return r;
