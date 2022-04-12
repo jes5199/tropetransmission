@@ -537,7 +537,7 @@ function vowelHoldDuration(speed, duration, isUpbeat) {
     if (isUpbeat) {
         noteLength = Math.round(noteLength / 1.1);
     }
-    console.log(noteLength);
+    //console.log(noteLength);
 
     let tenPercentLength = Math.round(noteLength * 0.1);
     let randomLength = Math.floor(Math.random() * tenPercentLength);
@@ -689,15 +689,34 @@ function parseTextIntoTropes(verse) {
     
     let tropes = [];
     // find trope for each word
-    for(index in words) {
-        let word = words[index];
+    for(const [index, word] of words.entries()) {
         tropes.push(tropeForTokenizedWord(unicodeHebrewWordToTokens(word)));
     }
     return tropes;
+}
 
-    // divide into phrases
+function contextForTropes(tropes) {
+    let results = [];
+    //let lastPhraseEndIndex = -1;
+    for (const [index, trope] of tropes.entries()) {
+        let previousTrope = index > 0 ? tropes[index - 1] : null;
+        let nextTrope = index < tropes.length - 1 ? tropes[index + 1] : null;
 
+        let phraseEndIndex = tropes.findIndex( (tr, i) => { return i >= index && (phraseEndingTropes.includes(tr[0]) || verseEndingTropes.includes(tr[0])) });
+        let groupTrope = tropes[phraseEndIndex];
 
+        let context = {
+            after: previousTrope ? previousTrope[0] : null,
+            before: nextTrope ? nextTrope[0] : null,
+            group: groupTrope ? groupTrope[0] : null,
+        }
+        results.push([...trope, context]);
+
+        //if (phraseEndIndex == index) {
+        //    lastPhraseEndIndex = index;
+        //}
+    }
+    return results;
 }
 
 
@@ -737,7 +756,7 @@ async function tests() {
 
 async function tests2() {
     // WIP
-    let tropes = parseTextIntoTropes(GenesisOneOne);
+    let tropes = contextForTropes(parseTextIntoTropes(GenesisOneOne));
     console.log(tropes);
 
     let speed = 3;
