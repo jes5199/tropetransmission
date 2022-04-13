@@ -88,7 +88,7 @@ const vowels = [
 ];
 
 const silent = [
-    "Aleph", "Yud"
+    //"Aleph", "Yud"
 ]
 
 const dots = [
@@ -402,8 +402,20 @@ const voicePitchOffset = {
 function unicodeHebrewWordToTokens(hebrewGlyphString) {
     // each mark in a hebrew word is a separate unicode character
     let r = [];
-    for (const ch of hebrewGlyphString) {
+    for (const [index, ch] of hebrewGlyphString.split("").entries()) {
         let name = charNames[ch];
+
+        let nextChar = hebrewGlyphString[index+1];
+        let nextName = charNames[nextChar];
+
+        let prevChar = hebrewGlyphString[index-1];
+        let prevName = charNames[prevChar];
+
+        let prevPrevChar = hebrewGlyphString[index-2];
+        let prevPrevName = charNames[prevPrevChar];
+
+        let prevLetter = tropes.includes(prevName) ? prevPrevName : prevName;
+
         if (name == "Dagesh") {
             const oldName = r[r.length - 1];
             const newName = dageshNames[oldName];
@@ -433,6 +445,14 @@ function unicodeHebrewWordToTokens(hebrewGlyphString) {
         } else if (name == "Shva") {
             // FIXME: logic for ShvaNa vs ShvaNoch is complicated!
             r.push("ShvaNa");
+        } else if (name == "Aleph") {
+            if (vowels.includes(nextName)) {
+                r.push(name);
+            }
+        } else if (name == "Yud") {
+            if (prevLetter != "Chirik") {
+                r.push(name);
+            }
         } else if (name) {
             r.push(name);
         } else {
@@ -524,7 +544,9 @@ function decPronunciation(phonemes, tokens) {
 }
 
 function splitPhoneme(decPhoneme) {
-    if (decPhoneme == "~gr_eu") {
+    if (decPhoneme.includes("<")) {
+        return [decPhoneme];
+    } else if (decPhoneme == "~gr_eu") {
         return ["~gr_o", "~oy", "~yx"];
     } else if (decPhoneme == "~gr_az") {
         return ["~eh", "~gr_az"];
@@ -545,9 +567,13 @@ function slideAndThenHoldPitch(decPhoneme, pitch, slideDuration, holdDuration) {
 
     let r = "";
     for ([index, phoneme] of parts.entries()) {
-        // seems like a bug in TT that diphongs get held extra long
-        let duration = index == 0 ? slideDuration : holdDuration;
-        r += phoneme + "<" + duration + "," + pitch + ">";
+        if (phoneme.includes("<")) {
+            r += phoneme;
+        } else {
+            // seems like a bug in TT that diphongs get held extra long
+            let duration = index == 0 ? slideDuration : holdDuration;
+            r += phoneme + "<" + duration + "," + pitch + ">";
+        }
     }
     return r;
 
@@ -821,18 +847,20 @@ async function tests2() {
     let range = "Baritone";
     let pitch = 0;
 
-    let song = decSong(
-        AveryBinderStyle,
-        AveryBinderMelody,
-        AshkenaziTraditionalPhonemes,
-        tropes[2],
-        speed,
-        range,
-        pitch
-    );
-    let singing = decSing(song, speed, range);
-    await singing;
+    let song = "";
+    for(var i = 0; i < 3; i+=1) {
+        song += decSong(
+            AveryBinderStyle,
+            AveryBinderMelody,
+            AshkenaziTraditionalPhonemes,
+            tropes[i],
+            speed,
+            range,
+            pitch
+        );
+    }
 
+    await decSing(song, speed, range);
 }
 
 
