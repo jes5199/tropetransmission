@@ -615,9 +615,7 @@ function findMatchingRule(tropeRules, tropeContext) {
     let bestRule = tropeRules.find(([ruleContext, notes]) => {
         if (ruleContext == "Default") { return false }
         for (key in ruleContext) {
-            console.log(key);
             if (ruleContext[key] != tropeContext[key]) {
-                console.log([key, ruleContext[key], tropeContext[key] ])
                 return false;
             }
         }
