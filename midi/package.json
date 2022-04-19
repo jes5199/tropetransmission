@@ -1,0 +1,14 @@
+{
+  "name": "tropetalk-midi",
+  "version": "0.0.1",
+  "description": "midi to phonemes",
+  "main": "midi.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jes Wolfe!",
+  "license": "ISC",
+  "dependencies": {
+    "midi": "^2.0.0"
+  }
+}
