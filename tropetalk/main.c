@@ -7,9 +7,9 @@
 
 typedef int (WINAPI *InitFunc)(void* arg1, void* handle, int arg3, int arg4);
 typedef int (WINAPI *IntFunc)(void* handle, int arg2);
-typedef int (WINAPI *SpeakFunc)(void* handle, char *text, int arg3);
+typedef int (WINAPI *SpeakFunc)(void* handle, char *text, int arg2);
 typedef int (WINAPI *OneArgFunc)(void* handle);
-
+typedef int (WINAPI *FilenameFunc)(void* handle, char *fileName, int arg1);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	printf("Callback %d %d %d \n", uMsg, wParam, lParam);
@@ -28,6 +28,7 @@ int __cdecl main(int argc, char *argv[]) {
 	OneArgFunc trope5;
 	OneArgFunc trope6;
 	IntFunc trope7stop;
+	FilenameFunc trope8file;
 	OneArgFunc trope9;
 
 	void* handle = NULL;
@@ -36,12 +37,12 @@ int __cdecl main(int argc, char *argv[]) {
 
 	tropeInit = GetProcAddress(tropeTalkLib, "L1");
 	tropeVoice = GetProcAddress(tropeTalkLib, "L2");
-	trope3 = GetProcAddress(tropeTalkLib, "L3"); // exit
+	trope3 = GetProcAddress(tropeTalkLib, "L3");
 	tropeSpeak = GetProcAddress(tropeTalkLib, "L4");
 	trope5 = GetProcAddress(tropeTalkLib, "L5");
 	trope6 = GetProcAddress(tropeTalkLib, "L6");
 	trope7stop = GetProcAddress(tropeTalkLib, "L7");
-	// L8 takes a filename
+	trope8file = GetProcAddress(tropeTalkLib, "L8");
 	trope9 = GetProcAddress(tropeTalkLib, "L9");
 
 	if (!tropeInit) {
@@ -73,6 +74,16 @@ int __cdecl main(int argc, char *argv[]) {
  		printf("init returned %d\n", r);
 	}
 
+	int writingToFile = argc > 1;
+
+	if (writingToFile) {
+		char *filename = argv[argc - 1];
+		printf("writing to %s\n", filename);
+
+		// 4 seems to select higher-quality .au format
+		trope8file(handle, filename, 4);
+	}
+
 	r = tropeVoice(handle, 2);
 
 	if (r != 0) {
@@ -80,11 +91,32 @@ int __cdecl main(int argc, char *argv[]) {
 	}
 
 	char buffer[MAX_BUFFER] = "";
+	char cr[] = "\n";
 
 	while (fgets(buffer, MAX_BUFFER, stdin)) {
-		r = tropeSpeak(handle, buffer, 1);
-		if (r != 0) {
- 			printf("speak returned %d\n", r);
+		int bufLength = strlen(buffer);
+		while(bufLength && (buffer[bufLength - 1] == 13 ||  buffer[bufLength - 1] == 10)) {
+			buffer[bufLength - 1] = 0;
+			bufLength--;
+		}
+		if (buffer[0] == 27 || buffer[0] == 8) {
+			//printf("ESC\n");
+			if (!writingToFile) {
+				r = trope7stop(handle, 1);
+				if (r != 0) {
+	 				printf("stop returned %d\n", r);
+				}
+			}
+		} else if (!bufLength) {
+			r = tropeSpeak(handle, cr, 1);
+			if (r != 0) {
+	 			printf("speak returned %d\n", r);
+			}
+		} else {
+			r = tropeSpeak(handle, buffer, 1);
+			if (r != 0) {
+	 			printf("speak returned %d\n", r);
+			}
 		}
 	}
 
@@ -92,7 +124,7 @@ int __cdecl main(int argc, char *argv[]) {
 
 	tropeSpeak(handle, endMark, 1);
 
-	printf("pointers %d %d\n", &buffer, &endMark);
+	//printf("pointers %d %d\n", &buffer, &endMark);
 
 	MSG message;
 	BOOL bRet;
@@ -100,7 +132,7 @@ int __cdecl main(int argc, char *argv[]) {
 
 	while( indexMark != 0 && ( bRet = GetMessage(&message, hwnd, 0, 0) ) != 0) {
 		//printf("got message %d %d %d \n", message.message, message.wParam, message.lParam);
-		if (message.wParam == 14) {
+		if (message.wParam == 14 || message.wParam == 0) {
 			indexMark = message.lParam;
 			//if (indexMark != 0) {
 				printf("index mark %d\n", indexMark);
