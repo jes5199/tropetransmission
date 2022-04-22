@@ -35,7 +35,7 @@ app.post('/tropesay', (req, res) => {
     if (rows && rows.length > 0) {
       filename = rows[0].file;
     } else {
-      filename = crypto.createHash('sha256').update(text).digest('hex') + ".au";
+      filename = crypto.createHash('sha256').update(text).digest('hex') + ".wav";
     }
     const insert = db.prepare("INSERT OR IGNORE INTO sayings (text, file) VALUES (?, ?)");
     insert.run(text, filename);
@@ -52,10 +52,19 @@ app.post('/tropesay', (req, res) => {
       if (err) {
         if (err.code == "ENOENT") {
           path = err.path;
-          console.log(`tropesay.sh ${path}`)
-          const tropesay = spawn('../tropetalk/tropesay.sh', [path]);
+          const auPath = path.replace(".wav", ".au");
+
+          console.log(`tropesay.sh ${auPath}`)
+
+          const tropesay = spawn('../tropetalk/tropesay.sh', [auPath]);
           tropesay.on('close', (code) => {
-            res.sendFile(path);
+            console.log(`sox ${auPath} ${path}`)
+            const sox = spawn('sox', [auPath, path]);
+
+            sox.on('close', (soxCode) => {
+              res.sendFile(path);
+            });
+            sox.stdin.end();
           });
           tropesay.stdin.write(text, (err) => {
             tropesay.stdin.end();
@@ -74,7 +83,7 @@ app.post('/tropesay', (req, res) => {
   });
 })
 
-const port = 3000;
+const port = 3001;
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
