@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "create-react-app": "^5.0.1",
+    "express": "^4.17.3",
+    "mkdirp": "^1.0.4",
+    "react": "^18.0.0",
+    "sqlite3": "^5.0.4"
+  }
+}
